@@ -17,6 +17,9 @@ app.use(
   })
 );
 
+app.get("/", (req, res) =>
+  res.send(`Server Running`)
+);
 let authenticate = function (req, res, next) {
   if (req.headers.authorization) {
     try {
