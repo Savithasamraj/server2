@@ -99,7 +99,7 @@ console.log("data1")
     console.log("error");
   }
 });
-app.post("/form", authenticate, async function (req, res) {
+app.post("/form", async function (req, res) {
   try {
     const connection = await mongoClient.connect(URL);
   
