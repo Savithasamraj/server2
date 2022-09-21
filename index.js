@@ -41,6 +41,7 @@ let authenticate = function (req, res, next) {
   }
 };
 
+//1.register a student
 app.post("/register", async function (req, res) {
   console.log("data123")
   try {
@@ -64,6 +65,7 @@ console.log("data1")
     });
   }
 });
+//2.login a student
 app.post("/login", async function (req, res) {
   console.log(req.body);
   console.log("datassss")
@@ -104,8 +106,45 @@ console.log("data1")
     console.log("error");
   }
 });
+
+//3.Admin login
+app.post("/admin", async function(req,res){
+  console.log(req.body)
+  try{
+const connection=await mongoClient.connect(URL);
+const db=await connection.db("query")
+const admin= await db.collection("admin").findOne({name:req.body.name});
+if(admin){
+ const match=await db.collection("admin").findOne({password:req.body.password})
+ if(match){
+res.json({
+  message:"Successfully logged in"
+})
+ }
+ else{
+  res.json({
+    message:"password incorrect"
+  })
+ }
+}
+else{
+  res.json({
+    message:"user name is not found"
+  })
+}
+
+
+  }
+  catch(error)
+{
+  console.log(error)
+}})
+
+
+//4.to create a query
 app.post("/form",authenticate, async function (req, res) {
-  try {
+console.log(req.body);//run
+    try {
     const connection = await mongoClient.connect(URL);
   
     const db = await connection.db("query");
@@ -114,7 +153,7 @@ app.post("/form",authenticate, async function (req, res) {
 req.body.date=new Date().toLocaleDateString() ;
 req.body.time=new Date().toLocaleTimeString()
     const body = await db.collection("form").insertOne(req.body);
-    // const req.body.question=body.length
+    
 
     await connection.close();
     res.json({
@@ -124,6 +163,27 @@ req.body.time=new Date().toLocaleTimeString()
     console.log(error);
   }
 });
+//5.create a mentor
+app.post("/mentor ",async function (req,res){
+  try{
+const connection= await mongoClient.connect(URL);
+const db=await connection.db("query");
+const  salt= await bcryptjs.genSalt(10)
+const hash=await bcryptjs.hash(req.body.password,salt)
+req.body.password=hash
+await db.collection("mentor").insertOne(req.body);
+await connection.close()
+res.json({
+  message:"mentor created"
+})
+  }catch(error){
+    console.log(error)
+  }
+})
+
+
+
+//6.dashboard of student
 app.get("/dashboard",authenticate, async function (req, res) {
   
   try{
@@ -147,16 +207,29 @@ console.log(error)
 });
 
 
-app.get("/mentorassign",async function(req,res){
+app.post("/mentorassign",async function (req,res){
+try{
+  console.log(req.body)
+  console.log("open")
   const connection= await mongoClient.connect(URL)
+  console.log("open1")
   const db=await connection.db("query")
-  const user=await db.collection("mentor").findOne({subject:req.values.subcategory})
+  console.log("open2")
+
+  const data= await db.collection("mentor").find({subject:req.body.subcategory}).toArray()
+  console.log(data)
    await connection.close();
 res.json({
   message:"queryassigned"
 })
+}
 
+catch(error){
+  console.log(error)
+}
 })
+
+
 const port=process.env.PORT ||5000
 app.listen(port, () => {
   console.log("running in ");
