@@ -12,7 +12,8 @@ const jwt = require("jsonwebtoken");
 app.use(express.json());
 app.use(
   cors({
-    origin: "*",
+    origin:'http://localhost:3000',
+    
     credentials:true
   })
 );
@@ -103,7 +104,7 @@ console.log("data1")
     console.log("error");
   }
 });
-app.post("/form", async function (req, res) {
+app.post("/form",authenticate, async function (req, res) {
   try {
     const connection = await mongoClient.connect(URL);
   
