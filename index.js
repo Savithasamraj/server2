@@ -377,8 +377,8 @@ app.put("/updatementor", authenticate, async function (req, res) {
     console.log(error);
   }
 });
-app.put("/status", async function(req,res){
-  console.log(req.body)
+app.put("/status", async function (req, res) {
+  console.log(req.body);
   try {
     const connection = await mongoClient.connect(URL);
     console.log("data");
@@ -387,7 +387,10 @@ app.put("/status", async function(req,res){
 
     const data1 = await db
       .collection("form")
-      .updateOne({ _id: mongodb.ObjectId(req.body._id) }, { $set:{status: "resolved" } });
+      .updateOne(
+        { _id: mongodb.ObjectId(req.body._id) },
+        { $set: { status: "resolved" } }
+      );
 
     console.log(data1);
     await connection.close();
@@ -398,23 +401,21 @@ app.put("/status", async function(req,res){
     console.log(error);
   }
 });
-app.get("/getqueries",async function(req,res){
-  try{
+app.get("/getqueries", async function (req, res) {
+  try {
     const connection = await mongoClient.connect(URL);
 
     const db = await connection.db("query");
-    const fetch=await db.collection("form").find().sort({date:-1}).toArray();
+    const fetch = await db.collection("form").find().sort({}).toArray();
 
     await connection.close();
     res.json({
-      fetch
-    })
+      fetch,
+    });
+  } catch (error) {
+    console.log(error);
   }
- 
-  catch(error){
-console.log(error)
-  }
-})
+});
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
