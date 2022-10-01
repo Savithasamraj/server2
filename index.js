@@ -398,6 +398,23 @@ app.put("/status", async function(req,res){
     console.log(error);
   }
 });
+app.get("/getqueries",async function(req,res){
+  try{
+    const connection = await mongoClient.connect(URL);
+
+    const db = await connection.db("query");
+    const fetch=await db.collection("form").find().toArray();
+
+    await connection.close();
+    res.json({
+      fetch
+    })
+  }
+ 
+  catch(error){
+console.log(error)
+  }
+})
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
