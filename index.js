@@ -403,7 +403,7 @@ app.get("/getqueries",async function(req,res){
     const connection = await mongoClient.connect(URL);
 
     const db = await connection.db("query");
-    const fetch=await db.collection("form").find().toArray();
+    const fetch=await db.collection("form").find().sort({date:-1}).toArray();
 
     await connection.close();
     res.json({
